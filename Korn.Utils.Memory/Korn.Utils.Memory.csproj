@@ -2,6 +2,15 @@
 
   <PropertyGroup>
     <TargetFrameworks>net8.0-windows;net472</TargetFrameworks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Korn.Interface\Korn.Interface\Korn.Interface.csproj" />
+    <ProjectReference Include="..\..\Korn.Logger\Korn.Logger\Korn.Logger.csproj" />
+    <ProjectReference Include="..\..\Korn.Shared.Internal\Korn.Shared.Internal\Korn.Shared.Internal.csproj" />
+    <ProjectReference Include="..\..\Korn.Shared\Korn.Shared\Korn.Shared.csproj" />
+  </ItemGroup>
 
 </Project>
