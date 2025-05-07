@@ -6,4 +6,8 @@
     <Platforms>x64</Platforms>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Korn.Core\Korn.Core\Korn.Core.csproj" />
+  </ItemGroup>
+
 </Project>
