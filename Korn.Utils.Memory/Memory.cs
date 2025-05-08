@@ -149,18 +149,20 @@ namespace Korn.Utils
                 Marshal.FreeCoTaskMem(pointer);
         }
         
-        public static byte[] Read(Address ptr, int len)
+        public static byte[] Read(Address ptr, int length)
         {
-            var bytes = new byte[len];
-            Copy(bytes, ptr);   
-            return bytes;
+            var byteArray = new byte[length];
+            fixed (byte* bytes = byteArray)
+                Copy(ptr, bytes, length);   
+            return byteArray;
         }
 
-        public static T[] Read<T>(Address ptr, int len)
+        public static T[] Read<T>(Address ptr, int length)
         {
-            var bytes = new T[len];
-            Copy(bytes, ptr);
-            return bytes;
+            var byteArray = new T[length];
+            fixed (T* bytes = byteArray)
+                Copy(ptr, bytes, length);
+            return byteArray;
         }
 
         public static string ReadUTF8(Address adress)
