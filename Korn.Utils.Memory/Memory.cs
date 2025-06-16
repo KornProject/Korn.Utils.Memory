@@ -4,8 +4,6 @@ using System;
 using System.Text;
 using System.Threading;
 
-
-
 #if NET8_0
 using System.Runtime.Intrinsics.X86;
 using System.Runtime.Intrinsics;
@@ -179,4 +177,3 @@ namespace Korn.Utils
         }
     }
 }
-#pragma warning restore CS8500 // This takes the address of, gets the size of, or declares a pointer to a managed type

@@ -1,4 +1,6 @@
-﻿namespace Korn.Utils
+﻿using System.Drawing;
+
+namespace Korn.Utils
 {
     public unsafe static class MemoryAllocator
     {
@@ -53,6 +55,8 @@
             return default;
         }
 
+        // for MemoryFreeType.Decommit
+        /*
         public static void Free(Address address, long size) => Kernel32.VirtualFree(address, size, MemoryFreeType.Release);
         public static void Free(MemoryBaseInfo* mbi) => Free(mbi->BaseAddress, mbi->RegionSize);
         public static void Free(Address address)
@@ -60,6 +64,11 @@
             var mbi = Query(address);
             Free(&mbi);
         }
+        */
+
+        // https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualfree: for MemoryFreeType.Release size should be zero
+        public static void Free(MemoryBaseInfo* mbi) => Free(mbi->BaseAddress);
+        public static void Free(Address address) => Kernel32.VirtualFree(address, 0, MemoryFreeType.Release);
 
         public static MemoryBaseInfo QueryTopFirstFree(Address address, long size)
         {
