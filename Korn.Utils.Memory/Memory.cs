@@ -1,8 +1,7 @@
-﻿using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+﻿using Korn.Modules.WinApi;
 using System;
+using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 
 #if NET8_0
 using System.Runtime.Intrinsics.X86;
@@ -34,7 +33,7 @@ namespace Korn.Utils
         class DefaultMemoryProvider : AbstractMemoryProvider
         {
             public override unsafe void Copy(byte* source, byte* destination, long length) => Buffer.MemoryCopy(source, destination, length, length);
-            public override void Zero(byte* destination, long length) => Kernel32.RtlZeroMemory(destination, length);
+            public override void Zero(byte* destination, long length) => Kernel32.RtlZeroMemory((IntPtr)destination, length);
         }
 
         static AbstractMemoryProvider MemoryProvider;
@@ -72,15 +71,15 @@ namespace Korn.Utils
         }
 #endif
 
-        public static void Zero(Address pointer, int size) => MemoryProvider.Zero(pointer, size);
+        public static void Zero(void* pointer, int size) => MemoryProvider.Zero(pointer, size);
 
-        public static void Copy(Address source, Address destination, long byteLength) => MemoryProvider.Copy(
+        public static void Copy(void* source, void* destination, long byteLength) => MemoryProvider.Copy(
             source, 
             destination, 
             byteLength
         );
 
-        public static void Copy<T>(T[] sourceArray, Address destination)
+        public static void Copy<T>(T[] sourceArray, void* destination)
         {
             fixed (T* source = sourceArray)
                 MemoryProvider.Copy(
@@ -110,7 +109,7 @@ namespace Korn.Utils
                 );
         }
 
-        public static void Copy<T>(Address source, T[] destinationArray, long byteLength)
+        public static void Copy<T>(void* source, T[] destinationArray, long byteLength)
         {
             fixed (T* destination = destinationArray)
                 MemoryProvider.Copy(
@@ -141,13 +140,15 @@ namespace Korn.Utils
 
         public static T* FastAlloc<T>(int count) => (T*)Allocate(sizeof(T) * count);
 
-        public static void Free(Address pointer)
+        public static void Free(void* pointer) => Free((IntPtr)pointer);
+
+        public static void Free(IntPtr address)
         {
-            if (pointer != Address.Zero)
-                Marshal.FreeCoTaskMem(pointer);
+            if (address != default)
+                Marshal.FreeCoTaskMem(address);
         }
         
-        public static byte[] Read(Address ptr, int length)
+        public static byte[] Read(void* ptr, int length)
         {
             var byteArray = new byte[length];
             fixed (byte* bytes = byteArray)
@@ -155,7 +156,7 @@ namespace Korn.Utils
             return byteArray;
         }
 
-        public static T[] Read<T>(Address ptr, int length)
+        public static T[] Read<T>(void* ptr, int length)
         {
             var byteArray = new T[length];
             fixed (T* bytes = byteArray)
@@ -163,7 +164,7 @@ namespace Korn.Utils
             return byteArray;
         }
 
-        public static string ReadUTF8(Address adress)
+        public static string ReadUTF8(void* adress)
         {
             const int MaxLength = short.MaxValue;
 

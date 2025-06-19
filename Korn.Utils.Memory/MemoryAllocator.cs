@@ -1,10 +1,13 @@
-﻿using System.Drawing;
+﻿using Korn.Modules.WinApi;
+using Korn.Modules.WinApi.Kernel;
+using System;
+using System.Drawing;
 
 namespace Korn.Utils
 {
     public unsafe static class MemoryAllocator
     {
-        public static MemoryBaseInfo AllocateNear(Address address, long size)
+        public static MemoryBaseInfo AllocateNear(IntPtr address, long size)
         {
             size = (size & 0xFFFFF000) + ((size & 0xFFF) > 0 ? 0x1000 : 0); // int anyway
 
@@ -15,25 +18,25 @@ namespace Korn.Utils
             return Allocate(mbi.BaseAddress, size);
         }            
 
-        public static MemoryBaseInfo Allocate(Address address, long size)
+        public static MemoryBaseInfo Allocate(IntPtr address, long size)
         {
             address = Kernel32.VirtualAlloc(address, size, MemoryState.Commit | MemoryState.Reserve, MemoryProtect.ExecuteReadWrite);
             return Query(address);
         }
 
-        public static MemoryBaseInfo Allocate(long size) => Allocate(null, size);
+        public static MemoryBaseInfo Allocate(long size) => Allocate(default, size);
 
-        public static MemoryBaseInfo Query(Address address) => Kernel32.VirtualQuery(address);
+        public static MemoryBaseInfo Query(IntPtr address) => Kernel32.VirtualQuery(address);
 
-        public static void Query(Address address, MemoryBaseInfo* mbi) => Kernel32.VirtualQuery(address, mbi);
+        public static void Query(IntPtr address, MemoryBaseInfo* mbi) => Kernel32.VirtualQuery(address, mbi);
 
-        public static MemoryBaseInfo FindFreeNear(Address address, long size)
+        public static MemoryBaseInfo FindFreeNear(IntPtr address, long size)
         {
             var top = QueryTopFirstFree(address, size);
             var bot = QueryBotFirstFree(address, size);
 
-            var topDistance = (long)top.BaseAddress - address.Signed;
-            var botDistance = address.Signed - (long)bot.BaseAddress;
+            var topDistance = (long)top.BaseAddress - (long)address;
+            var botDistance = (long)address - (long)bot.BaseAddress;
 
             if (!top.IsValid || !bot.IsValid)
             {
@@ -68,27 +71,27 @@ namespace Korn.Utils
 
         // https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualfree: for MemoryFreeType.Release size should be zero
         public static void Free(MemoryBaseInfo* mbi) => Free(mbi->BaseAddress);
-        public static void Free(Address address) => Kernel32.VirtualFree(address, 0, MemoryFreeType.Release);
+        public static void Free(IntPtr address) => Kernel32.VirtualFree(address, 0, MemoryFreeType.Release);
 
-        public static MemoryBaseInfo QueryTopFirstFree(Address address, long size)
+        public static MemoryBaseInfo QueryTopFirstFree(IntPtr address, long size)
         {
             var mbi = Query(address);
-            while (address.Unsigned < 0x7FFFFFFFFFFF)
+            while ((long)address < 0x7FFFFFFFFFFF)
             {
                 if (mbi.State == MemoryState.Free && (long)mbi.RegionSize >= size)
                     return mbi;
 
-                address = mbi.BaseAddress + mbi.RegionSize;
+                address = (IntPtr)((long)mbi.BaseAddress + mbi.RegionSize);
                 Query(address, &mbi);
             }
 
             return default;
         }
 
-        public static MemoryBaseInfo QueryBotFirstFree(Address address, long size)
+        public static MemoryBaseInfo QueryBotFirstFree(IntPtr address, long size)
         {
             var mbi = Query(address);
-            while (address.Unsigned > 0x10000)
+            while ((long)address > 0x10000)
             {
                 if (mbi.State == MemoryState.Free && (long)mbi.RegionSize >= size)
                     return mbi;
@@ -100,7 +103,7 @@ namespace Korn.Utils
             return default;
         }
 
-        public static MemoryBaseInfo QueryNextTop(MemoryBaseInfo* mbi) => Query(mbi->BaseAddress + mbi->RegionSize);
+        public static MemoryBaseInfo QueryNextTop(MemoryBaseInfo* mbi) => Query((IntPtr)((long)mbi->BaseAddress + mbi->RegionSize));
         public static MemoryBaseInfo QueryNextBot(MemoryBaseInfo* mbi) => Query(mbi->BaseAddress - 1);
     }
 }
