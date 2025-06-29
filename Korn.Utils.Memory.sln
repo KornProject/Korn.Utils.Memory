@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Korn.Utils.Memory", "Korn.U
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Korn.Core", "..\Korn.Core\Korn.Core\Korn.Core.csproj", "{049B4B46-A645-4A56-B25E-3361CD1F1186}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console", "Console\Console.csproj", "{28961717-220B-41A8-BFEB-12A8013A29A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -23,6 +25,10 @@ Global
 		{049B4B46-A645-4A56-B25E-3361CD1F1186}.Debug|x64.Build.0 = Debug|x64
 		{049B4B46-A645-4A56-B25E-3361CD1F1186}.Release|x64.ActiveCfg = Release|x64
 		{049B4B46-A645-4A56-B25E-3361CD1F1186}.Release|x64.Build.0 = Release|x64
+		{28961717-220B-41A8-BFEB-12A8013A29A7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{28961717-220B-41A8-BFEB-12A8013A29A7}.Debug|x64.Build.0 = Debug|Any CPU
+		{28961717-220B-41A8-BFEB-12A8013A29A7}.Release|x64.ActiveCfg = Release|Any CPU
+		{28961717-220B-41A8-BFEB-12A8013A29A7}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

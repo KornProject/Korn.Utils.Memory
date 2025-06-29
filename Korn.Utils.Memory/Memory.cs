@@ -128,17 +128,17 @@ namespace Korn.Utils
             return pointer;
         }
 
-        public static void* Alloc(int count) => ZeroAllocate(count);
+        public static void* ZeroAlloc(int count) => ZeroAllocate(count);
 
-        public static T* Alloc<T>() => (T*)ZeroAllocate(sizeof(T));
+        public static T* ZeroAlloc<T>() => (T*)ZeroAllocate(sizeof(T));
 
-        public static T* Alloc<T>(int count) => (T*)ZeroAllocate(sizeof(T) * count);
+        public static T* ZeroAlloc<T>(int count) => (T*)ZeroAllocate(sizeof(T) * count);
 
-        public static void* FastAlloc(int count) => Allocate(count);
+        public static void* Alloc(int count) => Allocate(count);
 
-        public static T* FastAlloc<T>() => (T*)Allocate(sizeof(T));
+        public static T* Alloc<T>() => (T*)Allocate(sizeof(T));
 
-        public static T* FastAlloc<T>(int count) => (T*)Allocate(sizeof(T) * count);
+        public static T* Alloc<T>(int count) => (T*)Allocate(sizeof(T) * count);
 
         public static void Free(void* pointer) => Free((IntPtr)pointer);
 
